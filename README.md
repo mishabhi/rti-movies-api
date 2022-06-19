@@ -20,6 +20,7 @@
 ## Improvements
 1. More unit test cases to cover service layer and domain layer
 2. Addition of Integration tests
+3. Use of db migration tool like Liquibase or flyway
 
 
 
