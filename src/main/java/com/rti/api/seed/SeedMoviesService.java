@@ -30,7 +30,7 @@ public class SeedMoviesService {
         log.info("*********************************Start - seeding of movies****************************");
         String moviesJson = "";
         try {
-            InputStream inputStream = new ClassPathResource("movies/movies.json").getInputStream();
+            InputStream inputStream = new ClassPathResource("seed/movies.json").getInputStream();
             byte[] rawData = FileCopyUtils.copyToByteArray(inputStream);
             moviesJson = new String(rawData, StandardCharsets.UTF_8);
         } catch (Exception exp) {
