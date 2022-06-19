@@ -1,0 +1,39 @@
+name: Build Docker Image for Movies API
+on:
+  push:
+    branches:
+      - main
+jobs:
+  buildDeploy:
+    name: Build Image
+    runs-on: [ubuntu-latest]
+    timeout-minutes: 10
+    env:
+      CI_IMAGE: movies-api
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run the unit test cases
+        run: ./gradlew testUnit
+      # - name: Run the integration test cases
+      #  run: ./gradlew testIntegration
+      - name: Create .env file
+        run: rm .env -f && mv .env.production .env
+      - name: Build the jar file
+        run: ./gradlew build
+      - name: Build Docker image
+        run: docker build --no-cache -t ${{ env.CI_IMAGE}}:${{ github.sha }} .
+      # Below are the further steps in case you want to push your image to docker repo
+      # - name: Add AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+      # - name: Login to Amazon ECR
+      # id: login-ecr
+      # uses: aws-actions/amazon-ecr-login@v1
+      # - name: Push New CI Image
+      # run: docker push ${{ secrets.AWS_ECR_URL }}/${{ env.CI_IMAGE }}:${{ github.sha }}
+      # - name: Logout of Amazon ECR
+      # if: always()
+      # run: docker logout ${{ steps.login-ecr.outputs.registry }}

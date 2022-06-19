@@ -1,0 +1,94 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.6.8'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+ext {
+	LOMBOK_VERSION = '1.18.24'
+	PGSQL_JDBC_VERSION = '42.3.6'
+	MAPSTRUCT_VERSION = '1.5.1.Final'
+	LOMBOK_MAPSTRUCT_BINDING_VERSION = '0.2.0'
+	VALIDATION_API_VERSION = '2.0.1.Final'
+	HIBERNATE_VALIDATOR_VERSION = '7.0.4.Final'
+	JAVAKRTA_JSON_API_VERSION = '2.1.0'
+	COMMONS_BEANUTILS_VERSION = '1.9.4'
+	COMMONS_LANG_VERSION = '3.12.0'
+	JACKSON_JSR310_VERSION = '2.13.3'
+	TEST_ASSERTJ_VERSION = '3.23.1'
+	TEST_TESTCONTAINERS_VERSION = '1.17.2'
+	TEST_HAMCREST_VERSION = '2.2'
+	TEST_JUNIT_VERSION = '5.8.2'
+	TEST_MOCKITO_JUNIT_VERSION = '4.6.1'
+}
+
+jar {
+	enabled = false
+}
+
+group = 'com.rti'
+version = '0.0.1'
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation "javax.validation:validation-api:${VALIDATION_API_VERSION}"
+	implementation "org.hibernate:hibernate-validator:${HIBERNATE_VALIDATOR_VERSION}"
+	implementation "jakarta.json:jakarta.json-api:${JAVAKRTA_JSON_API_VERSION}"
+	implementation "commons-beanutils:commons-beanutils:${COMMONS_BEANUTILS_VERSION}"
+	implementation "org.apache.commons:commons-lang3:${COMMONS_LANG_VERSION}"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${JACKSON_JSR310_VERSION}"
+	implementation 'org.projectlombok:lombok'
+	implementation "org.postgresql:postgresql:${PGSQL_JDBC_VERSION}"
+	implementation "org.mapstruct:mapstruct:${MAPSTRUCT_VERSION}"
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor(
+			"org.projectlombok:lombok-mapstruct-binding:${LOMBOK_MAPSTRUCT_BINDING_VERSION}",
+			'org.projectlombok:lombok',
+			"org.mapstruct:mapstruct-processor:${MAPSTRUCT_VERSION}",
+	)
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation ('org.springframework.security:spring-security-test')
+	testImplementation "org.hamcrest:hamcrest:${TEST_HAMCREST_VERSION}"
+	testImplementation "org.junit.jupiter:junit-jupiter-engine:${TEST_JUNIT_VERSION}"
+	testImplementation "org.mockito:mockito-junit-jupiter:${TEST_MOCKITO_JUNIT_VERSION}"
+	testImplementation "org.testcontainers:testcontainers:${TEST_TESTCONTAINERS_VERSION}"
+	testImplementation "org.assertj:assertj-core:${TEST_ASSERTJ_VERSION}"
+
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor(
+			'org.projectlombok:lombok'
+	)
+}
+
+test {
+	useJUnitPlatform();
+}
+
+tasks.register("testUnit", Test) {
+	useJUnitPlatform {
+		excludeTags "integration"
+	}
+}
+
+tasks.register("testIntegration", Test) {
+	useJUnitPlatform {
+		includeTags "integration"
+	}
+}

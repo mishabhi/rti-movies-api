@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  rti-db:
+    container_name: rti-db
+    image: library/postgres:14.2
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks:
+      - dev
+
+  rti-db-admin:
+    image: dpage/pgadmin4:6.10
+    container_name: rti-db-admin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@localhost.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
+    networks:
+      - dev
+
+  rti-api:
+    container_name: rti-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL
+      - DB_NAME
+      - DB_USERNAME
+      - DB_PASSWORD
+      - SPRING_PROFILES_ACTIVE
+    restart: on-failure
+    depends_on:
+      - rti-db
+    networks:
+      - dev
+
+networks:
+  dev:
+    driver: bridge
+volumes:
+  pg-data:
+    name: rti-pg-data
